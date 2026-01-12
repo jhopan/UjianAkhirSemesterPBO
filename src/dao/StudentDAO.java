@@ -251,6 +251,51 @@ public class StudentDAO {
     }
     
     /**
+     * Check - Mengecek apakah data siswa dengan nama dan tanggal lahir yang sama sudah ada
+     * @param namaLengkap Nama lengkap siswa
+     * @param tempatLahir Tempat lahir siswa
+     * @param tglLahir Tanggal lahir siswa
+     * @param excludeNoPendaftaran Nomor pendaftaran yang dikecualikan (untuk update)
+     * @return true jika duplikat ditemukan, false jika tidak
+     */
+    public boolean isDuplicate(String namaLengkap, String tempatLahir, java.util.Date tglLahir, String excludeNoPendaftaran) {
+        String query = "SELECT COUNT(*) as count FROM pendaftaran_siswa WHERE " +
+                      "nama_lengkap = ? AND tempat_lahir = ? AND tgl_lahir = ?";
+        
+        if (excludeNoPendaftaran != null && !excludeNoPendaftaran.isEmpty()) {
+            query += " AND no_pendaftaran != ?";
+        }
+        
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, namaLengkap);
+            stmt.setString(2, tempatLahir);
+            stmt.setDate(3, new java.sql.Date(tglLahir.getTime()));
+            
+            if (excludeNoPendaftaran != null && !excludeNoPendaftaran.isEmpty()) {
+                stmt.setString(4, excludeNoPendaftaran);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt("count");
+                rs.close();
+                stmt.close();
+                return count > 0;
+            }
+            
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    /**
      * Search - Mencari data siswa berdasarkan keyword
      * @param keyword Kata kunci pencarian
      * @return List of Student objects yang sesuai dengan keyword

@@ -360,6 +360,9 @@ public class StudentForm extends JInternalFrame {
         return panel;
     }
     
+    // Flag untuk membedakan mode baru atau edit
+    private boolean isNewMode = false;
+    
     /**
      * Method untuk data baru
      */
@@ -367,7 +370,11 @@ public class StudentForm extends JInternalFrame {
         clearForm();
         String noPendaftaran = studentDAO.generateNoPendaftaran();
         txtNoPendaftaran.setText(noPendaftaran);
+        isNewMode = true;
         setFormState(false);
+        // Sembunyikan tombol Update dan Hapus saat mode baru
+        btnUpdate.setVisible(false);
+        btnDelete.setVisible(false);
         txtNamaLengkap.requestFocus();
     }
     
@@ -379,18 +386,30 @@ public class StudentForm extends JInternalFrame {
             return;
         }
         
+        // Cek duplikat data
+        if (studentDAO.isDuplicate(
+                txtNamaLengkap.getText().trim(),
+                txtTempatLahir.getText().trim(),
+                dateChooserTglLahir.getDate(),
+                null)) {
+            JOptionPane.showMessageDialog(this,
+                "Data siswa dengan nama, tempat lahir, dan tanggal lahir yang sama sudah ada!",
+                "Duplikat Data", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
         try {
             Student student = new Student();
             student.setNoPendaftaran(txtNoPendaftaran.getText());
-            student.setNamaLengkap(txtNamaLengkap.getText());
-            student.setTempatLahir(txtTempatLahir.getText());
+            student.setNamaLengkap(txtNamaLengkap.getText().trim());
+            student.setTempatLahir(txtTempatLahir.getText().trim());
             student.setTglLahir(dateChooserTglLahir.getDate());
             student.setJnsKelamin(rbLaki.isSelected() ? "L" : "P");
-            student.setAlamat(txtAlamat.getText());
-            student.setAsalSekolah(txtAsalSekolah.getText());
-            student.setNilaiUan(Float.parseFloat(txtNilaiUan.getText()));
-            student.setNamaOrtuWali(txtNamaOrtu.getText());
-            student.setNoTelp(txtNoTelp.getText());
+            student.setAlamat(txtAlamat.getText().trim());
+            student.setAsalSekolah(txtAsalSekolah.getText().trim());
+            student.setNilaiUan(Float.parseFloat(txtNilaiUan.getText().trim()));
+            student.setNamaOrtuWali(txtNamaOrtu.getText().trim());
+            student.setNoTelp(txtNoTelp.getText().trim());
             
             if (studentDAO.createStudent(student)) {
                 JOptionPane.showMessageDialog(this,
@@ -399,6 +418,9 @@ public class StudentForm extends JInternalFrame {
                 loadTableData();
                 clearForm();
                 setFormState(true);
+                isNewMode = false;
+                btnUpdate.setVisible(true);
+                btnDelete.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this,
                     "Gagal menyimpan data!",
@@ -428,6 +450,18 @@ public class StudentForm extends JInternalFrame {
             return;
         }
         
+        // Cek duplikat data (exclude current record)
+        if (studentDAO.isDuplicate(
+                txtNamaLengkap.getText().trim(),
+                txtTempatLahir.getText().trim(),
+                dateChooserTglLahir.getDate(),
+                txtNoPendaftaran.getText())) {
+            JOptionPane.showMessageDialog(this,
+                "Data siswa dengan nama, tempat lahir, dan tanggal lahir yang sama sudah ada!",
+                "Duplikat Data", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
         int confirm = JOptionPane.showConfirmDialog(this,
             "Apakah Anda yakin ingin mengupdate data ini?",
             "Konfirmasi", JOptionPane.YES_NO_OPTION);
@@ -436,15 +470,15 @@ public class StudentForm extends JInternalFrame {
             try {
                 Student student = new Student();
                 student.setNoPendaftaran(txtNoPendaftaran.getText());
-                student.setNamaLengkap(txtNamaLengkap.getText());
-                student.setTempatLahir(txtTempatLahir.getText());
+                student.setNamaLengkap(txtNamaLengkap.getText().trim());
+                student.setTempatLahir(txtTempatLahir.getText().trim());
                 student.setTglLahir(dateChooserTglLahir.getDate());
                 student.setJnsKelamin(rbLaki.isSelected() ? "L" : "P");
-                student.setAlamat(txtAlamat.getText());
-                student.setAsalSekolah(txtAsalSekolah.getText());
-                student.setNilaiUan(Float.parseFloat(txtNilaiUan.getText()));
-                student.setNamaOrtuWali(txtNamaOrtu.getText());
-                student.setNoTelp(txtNoTelp.getText());
+                student.setAlamat(txtAlamat.getText().trim());
+                student.setAsalSekolah(txtAsalSekolah.getText().trim());
+                student.setNilaiUan(Float.parseFloat(txtNilaiUan.getText().trim()));
+                student.setNamaOrtuWali(txtNamaOrtu.getText().trim());
+                student.setNoTelp(txtNoTelp.getText().trim());
                 
                 if (studentDAO.updateStudent(student)) {
                     JOptionPane.showMessageDialog(this,
@@ -453,6 +487,7 @@ public class StudentForm extends JInternalFrame {
                     loadTableData();
                     clearForm();
                     setFormState(true);
+                    isNewMode = false;
                 } else {
                     JOptionPane.showMessageDialog(this,
                         "Gagal mengupdate data!",
@@ -507,6 +542,10 @@ public class StudentForm extends JInternalFrame {
     private void cancelInput() {
         clearForm();
         setFormState(true);
+        isNewMode = false;
+        // Tampilkan kembali tombol Update dan Hapus
+        btnUpdate.setVisible(true);
+        btnDelete.setVisible(true);
     }
     
     /**
@@ -584,8 +623,12 @@ public class StudentForm extends JInternalFrame {
                 txtNamaOrtu.setText(student.getNamaOrtuWali());
                 txtNoTelp.setText(student.getNoTelp());
                 
+                isNewMode = false;
                 setFormState(false);
                 btnSave.setEnabled(false);
+                // Tampilkan tombol Update dan Hapus saat edit mode
+                btnUpdate.setVisible(true);
+                btnDelete.setVisible(true);
             }
         }
     }
@@ -650,9 +693,9 @@ public class StudentForm extends JInternalFrame {
         
         try {
             float nilai = Float.parseFloat(txtNilaiUan.getText().trim());
-            if (nilai < 0 || nilai > 400) {
+            if (nilai <= 0 || nilai > 400) {
                 JOptionPane.showMessageDialog(this,
-                    "Nilai UAN harus antara 0 - 400!",
+                    "Nilai UAN harus lebih dari 0 dan maksimal 400!",
                     "Validasi", JOptionPane.WARNING_MESSAGE);
                 txtNilaiUan.requestFocus();
                 return false;
@@ -676,6 +719,16 @@ public class StudentForm extends JInternalFrame {
         if (txtNoTelp.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
                 "No. telepon harus diisi!",
+                "Validasi", JOptionPane.WARNING_MESSAGE);
+            txtNoTelp.requestFocus();
+            return false;
+        }
+        
+        // Validasi nomor telepon hanya boleh angka
+        String noTelp = txtNoTelp.getText().trim();
+        if (!noTelp.matches("[0-9]+")) {
+            JOptionPane.showMessageDialog(this,
+                "No. telepon hanya boleh berisi angka!",
                 "Validasi", JOptionPane.WARNING_MESSAGE);
             txtNoTelp.requestFocus();
             return false;
