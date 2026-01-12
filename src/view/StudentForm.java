@@ -360,9 +360,6 @@ public class StudentForm extends JInternalFrame {
         return panel;
     }
     
-    // Flag untuk membedakan mode baru atau edit
-    private boolean isNewMode = false;
-    
     /**
      * Method untuk data baru
      */
@@ -370,7 +367,6 @@ public class StudentForm extends JInternalFrame {
         clearForm();
         String noPendaftaran = studentDAO.generateNoPendaftaran();
         txtNoPendaftaran.setText(noPendaftaran);
-        isNewMode = true;
         setFormState(false);
         // Sembunyikan tombol Update dan Hapus saat mode baru
         btnUpdate.setVisible(false);
@@ -418,7 +414,6 @@ public class StudentForm extends JInternalFrame {
                 loadTableData();
                 clearForm();
                 setFormState(true);
-                isNewMode = false;
                 btnUpdate.setVisible(true);
                 btnDelete.setVisible(true);
             } else {
@@ -487,7 +482,6 @@ public class StudentForm extends JInternalFrame {
                     loadTableData();
                     clearForm();
                     setFormState(true);
-                    isNewMode = false;
                 } else {
                     JOptionPane.showMessageDialog(this,
                         "Gagal mengupdate data!",
@@ -542,7 +536,6 @@ public class StudentForm extends JInternalFrame {
     private void cancelInput() {
         clearForm();
         setFormState(true);
-        isNewMode = false;
         // Tampilkan kembali tombol Update dan Hapus
         btnUpdate.setVisible(true);
         btnDelete.setVisible(true);
@@ -623,7 +616,6 @@ public class StudentForm extends JInternalFrame {
                 txtNamaOrtu.setText(student.getNamaOrtuWali());
                 txtNoTelp.setText(student.getNoTelp());
                 
-                isNewMode = false;
                 setFormState(false);
                 btnSave.setEnabled(false);
                 // Tampilkan tombol Update dan Hapus saat edit mode
