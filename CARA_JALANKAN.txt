@@ -1,0 +1,76 @@
+================================================================================
+           SISTEM PENDAFTARAN SISWA BARU - CARA CEPAT JALANKAN
+================================================================================
+
+STATUS: SUDAH DI-COMPILE ✅ - TINGGAL JALANKAN!
+
+================================================================================
+                        3 LANGKAH MUDAH
+================================================================================
+
+1. START MYSQL
+   ─────────────────────────────────────────────────────
+   • Download & Install XAMPP: https://www.apachefriends.org/
+   • Buka XAMPP Control Panel
+   • Click "Start" pada MySQL
+   • Tunggu background jadi HIJAU ✅
+   
+2. IMPORT DATABASE
+   ─────────────────────────────────────────────────────
+   • Buka browser: http://localhost/phpmyadmin
+   • Tab "Import" → Choose file: database/pendaftaran_siswa.sql
+   • Click "Go"
+   • Done!
+
+3. JALANKAN APLIKASI
+   ─────────────────────────────────────────────────────
+   
+   Option A - NetBeans (Recommended):
+   • Buka NetBeans
+   • File → Open Project → pilih folder UAS
+   • Press F6 (Run)
+   
+   Option B - Command Line:
+   • Double-click: run.bat
+   
+   LOGIN:
+   • Username: admin
+   • Password: admin123
+
+================================================================================
+                     APA ITU XAMPP & KENAPA PERLU?
+================================================================================
+
+XAMPP = Package software yang berisi:
+  • Apache (web server)
+  • MySQL (database server) ← INI YANG KITA BUTUHKAN!
+  • PHP
+  • Perl
+
+Aplikasi ini pakai MySQL untuk simpan data siswa.
+MySQL harus RUNNING di localhost (komputer kamu).
+
+XAMPP paling gampang untuk install & jalankan MySQL di Windows.
+
+================================================================================
+                        TROUBLESHOOTING
+================================================================================
+
+❌ Cannot connect to database
+   → MySQL belum running? Start di XAMPP!
+   → Database belum di-import? Import SQL file!
+
+❌ Port 3306 sudah dipakai
+   → Ada MySQL lain yang running
+   → Stop service lain atau ganti port di config
+
+❌ phpMyAdmin tidak bisa dibuka
+   → Start Apache juga di XAMPP
+   → Atau import via command line (lihat README.md)
+
+================================================================================
+
+📖 Dokumentasi lengkap: Baca README.md
+🎓 Good luck dengan UAS!
+
+================================================================================
